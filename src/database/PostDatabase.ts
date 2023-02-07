@@ -1,9 +1,10 @@
-import { PostDB, UpdatedPost } from "../Types";
+import { PostDB, UpdatedPost, UserDB } from "../Types";
 import { BaseDatabase } from "./BaseDatabase";
 
 export class PostDatabase extends BaseDatabase {
 
     public static TABLE_POST = "posts"
+    public static TABLE_USER = "users"
    //metodos 
     //get e post
     public async findPosts(q: string | undefined): Promise<PostDB[]> {
@@ -29,10 +30,16 @@ export class PostDatabase extends BaseDatabase {
         return postDBExists
     }
 
-    public async findUserById(creatorId: string | undefined): Promise<PostDB | undefined> {
-        const [userDBExists]: PostDB[] | undefined[] = await BaseDatabase
-            .connection(PostDatabase.TABLE_POST)
-            .where({ id: creatorId })
+    // public async findUserById(creatorId: string | undefined): Promise<PostDB | undefined> {
+    //     const [userDBExists]: PostDB[] | undefined[] = await BaseDatabase
+    //         .connection(PostDatabase.TABLE_POST)
+    //         .where({ id: creatorId })
+    //     return userDBExists
+    // }
+    public async findUserById(id: string | undefined): Promise<UserDB | undefined> {
+        const [userDBExists]: UserDB[] | undefined[] = await BaseDatabase
+            .connection(PostDatabase.TABLE_USER)
+            .where({ id })
         return userDBExists
     }
     //post create
@@ -48,10 +55,11 @@ export class PostDatabase extends BaseDatabase {
             .where({ id })
     }
  //delete
-    public async deletePost(id: string): Promise<void> {
-        await BaseDatabase
-            .connection(PostDatabase.TABLE_POST)
-            .del()
-            .where({ id })
-    }
+ public async deletePost(id: string): Promise<void> {
+    await BaseDatabase
+        .connection(PostDatabase.TABLE_POST)
+        .del()
+        .where({ id })
+ }
+
 }

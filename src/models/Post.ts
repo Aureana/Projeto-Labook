@@ -12,9 +12,15 @@ export class Post {
     public getId(): string {
         return this.id
     }
+    public setId(newId: string): void {
+        this.id = newId
+    }
 
     public getCreatorId(): string {
         return this.creatorId
+    }
+    public setCreatorId(newCreatorId: string): void {
+        this.creatorId = newCreatorId
     }
 
     public getContent(): string {
@@ -56,4 +62,6 @@ export class Post {
     public setUpdatedAt(newUpdatedAt: string): void {
         this.updatedAt = newUpdatedAt
     }
+
+
 }
