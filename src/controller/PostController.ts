@@ -1,23 +1,32 @@
 import { Request, Response } from "express"
 import { PostBusiness } from "../business/PostBusiness"
+import { PostDTO } from "../dto/PostDTO"
 import { BaseError } from "../errors/BaseError"
 
 
 export class PostController {
+    constructor(
+        private postDTO: PostDTO,
+        private postBusiness: PostBusiness
+    ) {}
+
+
     public getPosts = async (req: Request, res: Response) => {
         try {
-            const q = req.query.q as string | undefined
+            const input = {
+                q: req.query.q
+            }
 
-            const postBusiness = new PostBusiness()
-            const output = await postBusiness.getPost(q)
+            // const postBusiness = new PostBusiness()
+            const output = await this.postBusiness.getPost(input)
 
             res.status(200).send(output)
         } catch (error) {
             console.log(error)
-    
+
             if (error instanceof BaseError) {
-                res.status(error.statusCode).send(error.message)             
-            
+                res.status(error.statusCode).send(error.message)
+
             } else {
                 res.send("Erro inesperado")
             }
@@ -26,26 +35,26 @@ export class PostController {
     //create
     public createPost = async (req: Request, res: Response) => {
         try {
-            const input = {
-                id: req.body.id,
-                creatorId: req.body.creator_id,
-                content: req.body.content,
-                likes: req.body.likes,
-                dislikes: req.body.dislikes,
-                created_at: req.body.created_at,
-                updated_at: req.body.updated_at
-            }
-            const userBusiness = new PostBusiness()
-            const output = await userBusiness.createPost(input)
+            const input = this.postDTO.createPostInput(
+                req.body.id,
+                req.body.creatorId,
+                req.body.content,
+                req.body.likes,
+                req.body.dislikes,
+                req.body.created_at,
+                req.body.updated_at
+            )
+            //const userBusiness = new PostBusiness()
+            const output = await this.postBusiness.createPost(input)
 
 
             res.status(201).send(output)
         } catch (error) {
             console.log(error)
-    
+
             if (error instanceof BaseError) {
-                res.status(error.statusCode).send(error.message)             
-            
+                res.status(error.statusCode).send(error.message)
+
             } else {
                 res.send("Erro inesperado")
             }
@@ -58,24 +67,30 @@ export class PostController {
     public editPost = async (req: Request, res: Response) => {
         try {
 
-            const input ={
-                id: req.params.id,
-                content: req.body.content,
-                updatedAt: req.body.updated_at
-            }
+            const input = this.postDTO.editPostInput(
+                req.params.id,
+                req.body.creatorId,
+                req.body.content,
+                req.body.likes,
+                req.body.dislikes,
+                req.body.created_at,
+                req.body.updated_at
 
-            const postBusiness = new PostBusiness()
-            const output = await postBusiness.editPost(input)
+            )
+
+
+            //const postBusiness = new PostBusiness()
+            const output = await this.postBusiness.editPost(input)
 
             res.status(200).send(output)
 
 
         } catch (error) {
             console.log(error)
-    
+
             if (error instanceof BaseError) {
-                res.status(error.statusCode).send(error.message)             
-            
+                res.status(error.statusCode).send(error.message)
+
             } else {
                 res.send("Erro inesperado")
             }
@@ -85,16 +100,18 @@ export class PostController {
 
     public deletePost = async (req: Request, res: Response) => {
         try {
-            const id = req.params.id
+            const input = {
+                idToDelete: req.params.id
+            }
 
-            const postBusiness = new PostBusiness()
-            const output = await postBusiness.deletePost(id)
-            
+            //const postBusiness = new PostBusiness()
+            const output = await this.postBusiness.deletePost(input)
+
             res.status(200).send(output)
 
         } catch (error) {
             console.log(error)
-    
+
             if (error instanceof BaseError) {
                 res.status(error.statusCode).send(error.message)
             } else {

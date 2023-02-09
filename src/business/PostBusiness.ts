@@ -1,12 +1,10 @@
 import { PostDatabase } from "../database/PostDatabase"
 import { BadRequestError } from "../errors/BadRequestError"
+import { NotFoundError } from "../errors/NotFoundError"
 import { Post } from "../models/Post"
 import { PostDB, UpdatedPost } from "../Types"
 
 export class PostBusiness {
-
-
-
 
     public getPost = async (q: string | undefined) => {
         const postDatabase = new PostDatabase()
@@ -29,25 +27,25 @@ export class PostBusiness {
 
         const { id, creatorId, content, likes, dislikes } = input
 
-        if (typeof id !== "string") {
-            throw new Error("'id' deve ser string")
-        }
+        // if (typeof id !== "string") {
+        //     throw new Error("'id' deve ser string")
+        // }
 
-        if (typeof creatorId !== "string") {
-            throw new Error("'creatorId' deve ser string")
-        }
+        // if (typeof creatorId !== "string") {
+        //     throw new Error("'creatorId' deve ser string")
+        // }
 
-        if (typeof content !== "string") {
-            throw new Error("'duration' deve ser string")
-        }
+        // if (typeof content !== "string") {
+        //     throw new Error("'duration' deve ser string")
+        // }
 
-        if (typeof likes !== "number") {
-            throw new Error("'likes' deve ser integer")
-        }
+        // if (typeof likes !== "number") {
+        //     throw new Error("'likes' deve ser integer")
+        // }
 
-        if (typeof dislikes !== "number") {
-            throw new Error("'dislikes' deve ser integer")
-        }
+        // if (typeof dislikes !== "number") {
+        //     throw new Error("'dislikes' deve ser integer")
+        // }
 
         const postDatabase = new PostDatabase()
         const postDBExists = await postDatabase.findPostById(id)
@@ -96,85 +94,76 @@ export class PostBusiness {
 
     public editPost = async (input: any) => {
 
-        const { id, content, likes, dislikes, updatedAt } = input
+        const { 
+            newId, 
+            newContent, 
+            newLikes, 
+            newDislikes, 
+            newUpdatedAt 
+        } = input
 
         const postDatabase = new PostDatabase()
 
-        if (id[0] !== "p") {
+        if ( newId[0] !== "p") {
             throw new Error("'id' deve iniciar com a letra 'p'");
         }
 
-        const post = await postDatabase.findPostById(id)
+        const postToEditDB = await this.postDatabase.findPostById(id)
 
-        if (!post) {
-            throw new Error("post não encontrado")
+        if (!postToEditDB) {
+            throw new NotFoundError("id para editar não existe")
         }
 
-        const newPost = new Post(
-            post.id,
-            post.creator_id,
-            content || post.content,
-            likes || post.likes,
-            dislikes || post.dislikes,
-            post.created_at,
-            updatedAt || post.updated_at
+        const post = new Post(
+            postToEditDB.id,
+            postToEditDB.creator_id,
+            postToEditDB.content,
+            postToEditDB.likes,
+            postToEditDB.dislikes,
+            postToEditDB.created_at,
+            postToEditDB.updated_at
         )
 
-        if (content !== undefined) {
-            if (typeof content !== "string") {
-                throw new Error("'content' deve ser string");
-            }
-            newPost.setContent(content)
-            newPost.setUpdatedAt(new Date().toISOString())
+        newId && post.setId(newId)
+        newContent && post.setContent(newContent) 
+        newLikes && post.setLikes(newLikes) 
+        newDislikes && post.setDislikes(newDislikes) 
+        newUpdatedAt && post.setUpdatedAt(newUpdatedAt)
+
+        const updatePostDB: PostDB = {
+            id: post.getId(),
+            content: post.getContent(),
+            likes: post.getLikes(),
+            dislikes: post.getDislikes(),
+            updated_at: post.getCreatedAt()
         }
+        await this.postDatabase.updatePost(updatePostDB)
 
-        if (likes !== undefined) {
-            if (typeof likes !== "number") {
-                throw new Error("'likes' deve ser integer")
-            }
-            newPost.setLikes(likes)
-            newPost.setUpdatedAt(new Date().toISOString())
-        }
+        const output = this.postDTO.EditPostOutputDTO(post)
 
-        if (dislikes !== undefined) {
-            if (typeof dislikes !== "number") {
-                throw new Error("'dislikes' deve ser integer")
-            }
-            newPost.setDislikes(dislikes)
-            newPost.setUpdatedAt(new Date().toISOString())
-        }
-
-        const newPostDB: UpdatedPost = {
-            content: newPost.getContent(),
-            likes: newPost.getLikes(),
-            dislikes: newPost.getDislikes(),
-        }
-
-        postDatabase.editPost(newPostDB, id)
-
-        return ({
-            message: "Edição realizada",
-            newPost: newPost
-        })
+        return output
+        
     }
 
+//**** */
 
-    public deletePost = async (id: any) => {
+
+    public deletePost = async (input: any) => {
+        const { idToDelete } = input
 
         const postDatabase = new PostDatabase()
-        const postDBExists = await postDatabase.findPostById(id)
+        const postDBExists = await postDatabase.findPostById(idToDelete )
 
         if (!postDBExists) {
-            throw new BadRequestError("post não encontrado")
+            throw new BadRequestError("Idpost não encontrado")
         } else {
 
-            await postDatabase.deletePost(id)
+            await postDatabase.deletePostById(postDBExists.id)
 
-            return ({
-                message: "Post apagado com sucesso",
-            })
-
-
+            const output = {
+                message: "Post deletado com sucesso"
+            }
+            return output
         }
     }
 }
