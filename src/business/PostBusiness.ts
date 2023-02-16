@@ -4,6 +4,7 @@ import { NotFoundError } from "../errors/NotFoundError"
 import { Post } from "../models/Post"
 import { PostDB, UpdatedPost } from "../Types"
 
+
 export class PostBusiness {
 
     public getPost = async (q: string | undefined) => {

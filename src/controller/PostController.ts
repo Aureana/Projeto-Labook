@@ -11,16 +11,21 @@ export class PostController {
     ) {}
 
 
-    public getPosts = async (req: Request, res: Response) => {
+    public getPost = async (req: Request, res: Response) => {
         try {
-            const input = {
-                q: req.query.q
-            }
+            const input = req.query.q as string | undefined
 
-            // const postBusiness = new PostBusiness()
             const output = await this.postBusiness.getPost(input)
 
             res.status(200).send(output)
+            // const input = {
+            //     q: req.query.q as string | undefined
+            // }
+
+            // // const postBusiness = new PostBusiness()
+            // const output = await this.postBusiness.getPost(input)
+
+            // res.status(200).send(output)
         } catch (error) {
             console.log(error)
 
