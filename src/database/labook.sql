@@ -9,7 +9,7 @@ CREATE TABLE
         role ENUM NOT NULL,
         created_at TEXT DEFAULT (DATETIME()) NOT NULL
     );
-  -- DROP TABLE users;
+-- DROP TABLE users;
 
 
 CREATE TABLE
@@ -40,7 +40,7 @@ CREATE TABLE
         ON UPDATE CASCADE
     );
 
- --   DROP TABLE likes_dislikes ;
+ -- DROP TABLE likes_dislikes ;
 
      INSERT INTO users (id, name, email, password, role)
 VALUES
@@ -64,6 +64,7 @@ VALUES
 ("u001", "p003", 1),
 ("u003", "p003", 0);
 
+
 UPDATE posts
 SET likes = 2
 WHERE id = "p001";
@@ -79,6 +80,22 @@ WHERE id = "p003";
 UPDATE posts
 SET dislikes = 1
 WHERE id = "p003";
+
+
+
+SELECT
+    posts.id,
+    posts.creator_id,
+    posts.content,
+    posts.likes,
+    posts.dislikes,
+    posts.created_at,
+    posts.updated_at,
+    users.name AS creator_name
+FROM posts
+JOIN users
+ON posts.creator_id = users.id;
+
 
 
 SELECT * FROM users;
