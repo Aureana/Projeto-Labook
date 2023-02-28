@@ -14,7 +14,7 @@ O **Labook** é uma rede social com o objetivo de promover a conexão e interaç
 
 
 #
-## Stack utilizada: Front-end: 
+## Stack utilizada: Back-end: 
 * NodeJS 
 
 * Typescript
